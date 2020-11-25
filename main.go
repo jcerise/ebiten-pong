@@ -10,6 +10,8 @@ import (
 const (
 	SCREENWIDTH = 640
 	SCREENHEIGHT = 480
+
+	BALLSPEED = 3
 )
 
 var (
@@ -29,6 +31,7 @@ var (
 	ballWidth int
 	ballHeight int
 	ballPos Position
+	ballVelocity Velocity
 
 )
 
@@ -62,6 +65,10 @@ func init() {
 
 	ballWidth, ballHeight = ballImage.Size()
 	ballPos = Position{float64((SCREENWIDTH / 2) - ballWidth), float64((SCREENHEIGHT / 2) - ballHeight)}
+	ballVelocity = Velocity{
+		2,
+		4,
+	}
 }
 
 type Game struct{}
@@ -82,6 +89,31 @@ func (g *Game) Update() error {
 			playerPos.Y -= 4
 		}
 	}
+
+	// If the ball has reached an edge, calculate a new velocity for it based on where it hit
+	//var bounceAngle float64
+	if ballPos.Y <= 0 || (ballPos.Y + float64(ballHeight)) >= SCREENHEIGHT {
+		//var relativeIntersectX = (SCREENWIDTH / 2) - ballPos.X
+		//var normalizedIntesectX = relativeIntersectX / (SCREENWIDTH / 2)
+		//bounceAngle = normalizedIntesectX * 75
+		//
+		//ballVelocity.vx = BALLSPEED * math.Cos(bounceAngle)
+		//ballVelocity.vy = BALLSPEED * -math.Sin(bounceAngle)
+		ballVelocity.vy = -ballVelocity.vy
+	}
+
+	if ballPos.X <= 0 || ballPos.X + float64(ballWidth) >= SCREENWIDTH {
+		//var relativeIntersectY = (SCREENHEIGHT / 2) - ballPos.Y
+		//var normalizedIntesectY = relativeIntersectY / (SCREENHEIGHT / 2)
+		//bounceAngle = normalizedIntesectY * 75
+		//
+		//ballVelocity.vx = BALLSPEED * -math.Cos(bounceAngle)
+		//ballVelocity.vy = BALLSPEED * math.Sin(bounceAngle)
+		ballVelocity.vx = -ballVelocity.vx
+	}
+
+	ballPos.X += ballVelocity.vx
+	ballPos.Y += ballVelocity.vy
 
 	return nil
 }
