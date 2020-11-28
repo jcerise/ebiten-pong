@@ -17,6 +17,7 @@ type Paddle struct {
 	position Position
 	width int
 	height int
+	lastState Direction
 }
 
 type Ball struct {
