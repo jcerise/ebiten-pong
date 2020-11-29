@@ -22,11 +22,11 @@ type Direction int
 type Screen int
 
 const (
-	fontSize      = 32
-	smallFontSize = fontSize / 3
+	FontSize      = 32
+	SmallFontSize = FontSize / 3
 
-	screenWidth  = 640
-	screenHeight = 480
+	ScreenWidth  = 640
+	ScreenHeight = 480
 )
 
 // Directions along the Y-Axis
@@ -91,7 +91,7 @@ func init() {
 	const dpi = 72
 
 	arcadeFont, err = opentype.NewFace(tt, &opentype.FaceOptions{
-		Size:    fontSize,
+		Size:    FontSize,
 		DPI:     dpi,
 		Hinting: font.HintingFull,
 	})
@@ -99,7 +99,7 @@ func init() {
 		log.Fatal(err)
 	}
 	smallArcadeFont, err = opentype.NewFace(tt, &opentype.FaceOptions{
-		Size:    smallFontSize,
+		Size:    SmallFontSize,
 		DPI:     dpi,
 		Hinting: font.HintingFull,
 	})
@@ -114,11 +114,11 @@ func init() {
 	player = Paddle{playerImage, playerPos, playerWidth, playerHeight, Neutral}
 
 	opponentWidth, opponentHeight := opponentImage.Size()
-	opponentPos := Position{float64(screenWidth - opponentWidth), 0}
+	opponentPos := Position{float64(ScreenWidth - opponentWidth), 0}
 	opponent = Paddle{opponentImage, opponentPos, opponentWidth, opponentHeight, Neutral}
 
 	ballWidth, ballHeight := ballImage.Size()
-	ballPos := Position{float64((screenWidth / 2) - ballWidth), float64((screenHeight / 2) - ballHeight)}
+	ballPos := Position{float64((ScreenWidth / 2) - ballWidth), float64((ScreenHeight / 2) - ballHeight)}
 	ballVelocity := Velocity{
 		float64(rangeNegative(-4, 4)),
 		float64(rangeNegative(-4, 4)),
@@ -189,19 +189,19 @@ func (g *Game) Update() error {
 
 		// Check if the ball has gone off the screen. If its gone off the screen on the left (negative X value), the
 		// opponent has scored. If its gone off the screen on the right (X larger than screen size), the player has scored
-		if ball.position.X <= 0 || ball.position.X >= screenWidth {
+		if ball.position.X <= 0 || ball.position.X >= ScreenWidth {
 			if ball.position.X <= 0 {
 				// The opponent has scored. Increment the opponents score, and reset the ball position ot the center of the
 				// screen with a random velocity towards the player
 				g.opponentScore ++
-			} else if ball.position.X >= screenWidth {
+			} else if ball.position.X >= ScreenWidth {
 				// The player has scored, Increment the players score, and reset the ball position to the center of the screen
 				// with a random velocity towards the opponent
 				g.playerScore ++
 			}
 
 			// Either way, reset the ball and start a new round
-			ball.position = Position{float64((screenWidth / 2) - ball.width), float64((screenHeight / 2) - ball.height)}
+			ball.position = Position{float64((ScreenWidth / 2) - ball.width), float64((ScreenHeight / 2) - ball.height)}
 			ball.velocity = Velocity{float64(rangeNegative(-4, 4)), float64(rangeNegative(-4, 4))}
 		}
 
@@ -232,10 +232,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	switch g.screen {
 	case ScreenTitle:
 		lines := []string{"EBITEN PONG", "", "", "", "[Space] - Begin", "", "[C] - Credits"}
-		g.printText(lines, arcadeFont, fontSize, screen)
+		g.printText(lines, arcadeFont, FontSize, screen)
 	case ScreenCredits:
-		lines := []string{"Credits", "", "Programmed by Jeremy Cerise, 2020", "", "Images made by Nicolás A. Ortega (Deathsbreed)", "https://opengameart.org/content/pong-graphics", "", "All works licensed CC BY-SA 2.0"}
-		g.printText(lines, smallArcadeFont, smallFontSize, screen)
+		lines := []string{"Credits", "", "", "Programmed by Jeremy Cerise, 2020", "", "Images made by Nicolás A. Ortega (Deathsbreed)", "https://opengameart.org/content/pong-graphics", "", "All works licensed CC BY-SA 2.0"}
+		g.printText(lines, smallArcadeFont, SmallFontSize, screen)
 	case ScreenGame:
 		playerOptions := &ebiten.DrawImageOptions{}
 		playerOptions.GeoM.Translate(player.position.X, player.position.Y)
@@ -251,14 +251,14 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 		playerScore := fmt.Sprintf("%02d", g.playerScore)
 		opponentScore := fmt.Sprintf("%02d", g.opponentScore)
-		text.Draw(screen, playerScore, arcadeFont, (screenWidth/2)-(screenWidth/3), 50, color.White)
-		text.Draw(screen, opponentScore, arcadeFont, (screenWidth/2)+(screenWidth/5), 50, color.White)
+		text.Draw(screen, playerScore, arcadeFont, (ScreenWidth/2)-(ScreenWidth/3), 50, color.White)
+		text.Draw(screen, opponentScore, arcadeFont, (ScreenWidth/2)+(ScreenWidth/5), 50, color.White)
 	case ScreenPlayerWin:
 		lines := []string{"YOU WIN!", "", "Press 'R' to play again"}
-		g.printText(lines, arcadeFont, fontSize, screen)
+		g.printText(lines, arcadeFont, FontSize, screen)
 	case ScreenPlayerLose:
 		lines := []string{"YOU LOSE, TRY AGAIN!", "", "Press 'R' to play again"}
-		g.printText(lines, arcadeFont, fontSize, screen)
+		g.printText(lines, arcadeFont, FontSize, screen)
 	}
 }
 
@@ -292,8 +292,8 @@ func (g *Game) movePaddle(paddle *Paddle, direction Direction) {
 			paddle.lastState = Up
 		}
 	case Down:
-		if paddle.position.Y >= float64(screenHeight-paddle.height) {
-			paddle.position.Y = float64(screenHeight - player.height)
+		if paddle.position.Y >= float64(ScreenHeight-paddle.height) {
+			paddle.position.Y = float64(ScreenHeight - player.height)
 			paddle.lastState = Neutral
 		} else {
 			paddle.position.Y += 4
@@ -310,7 +310,7 @@ func (g *Game) calculateBallVelocity(ball Ball) Velocity {
 	// If the ball has reached an edge, calculate a new velocity for it based on where it hit
 	//var bounceAngle float64
 	var newVelocity Velocity
-	if ball.position.Y <= 0 || (ball.position.Y+float64(ball.height)) >= screenHeight {
+	if ball.position.Y <= 0 || (ball.position.Y+float64(ball.height)) >= ScreenHeight {
 		newVelocity = Velocity{ball.velocity.vx, -ball.velocity.vy}
 	} else if g.checkBallCollision(player, ball) {
 		newVelocity = Velocity{-ball.velocity.vx, ball.velocity.vy}
@@ -338,20 +338,20 @@ func (g *Game) calculateBallVelocity(ball Ball) Velocity {
 // X axis
 func (g *Game) printText(lines []string, textFont font.Face, fontSize int, screen *ebiten.Image) {
 	for i, line := range lines {
-		xAlign := (screenWidth - len(line)*fontSize) / 2
+		xAlign := (ScreenWidth - len(line)*fontSize) / 2
 		text.Draw(screen, line, textFont, xAlign, (i+4)*fontSize, color.White)
 	}
 }
 
 // Layout defines the size of our game window
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return screenWidth, screenHeight
+	return ScreenWidth, ScreenHeight
 }
 
 func main() {
 	game := &Game{}
 	game.screen = ScreenTitle
-	ebiten.SetWindowSize(screenWidth, screenHeight)
+	ebiten.SetWindowSize(ScreenWidth, ScreenHeight)
 	ebiten.SetWindowTitle("Ebiten Pong")
 
 	if err := ebiten.RunGame(game); err != nil {

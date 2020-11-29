@@ -7,6 +7,7 @@ system. Its pong, not the greatest version, but Pong, none-the-less.
 ## Installation
 1. Clone this repo into your $GOPATH
 2. In the project directory, run `go build`
+3. `./ebiten-pong`
 
 ## Licenses
 MIT License
