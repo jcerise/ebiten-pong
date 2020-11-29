@@ -1,4 +1,4 @@
-module ebiten-test
+module ebiten-pong
 
 go 1.15
 
